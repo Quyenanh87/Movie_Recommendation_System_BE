@@ -1,0 +1,63 @@
+# import pickle
+# import numpy as np
+# import pandas as pd
+
+# # Load mô hình đã lưu
+# with open("itemcf_model.pkl", "rb") as f:
+#     model = pickle.load(f)
+
+# sim_df = model["sim_df"]
+# train_rating_dict = model["train_rating_dict"]
+# item_avg_rating = model["item_avg_rating"]
+# user_train_rating = model["user_train_rating"]
+# movies_df = model["movies_df"]
+
+# # Hàm dự đoán
+# def predict_rating_item_item(user, movie, user_train_dict, sim_df, train_rating_dict, item_avg_rating, neighbor=10):
+#     rated_movies = user_train_dict.get(user, [])
+#     if len(rated_movies) == 0 or movie not in sim_df.index:
+#         return np.nan
+
+#     sim_list = []
+#     for rated_movie in rated_movies:
+#         if rated_movie in sim_df.index:
+#             sim = sim_df.at[movie, rated_movie]
+#             r_val = train_rating_dict.get((user, rated_movie))
+#             if r_val is not None and not np.isnan(sim):
+#                 diff = r_val - item_avg_rating.get(rated_movie, 0)
+#                 sim_list.append((sim, diff))
+
+#     if len(sim_list) == 0:
+#         user_ratings = [train_rating_dict[(user, m)] for m in rated_movies if (user, m) in train_rating_dict]
+#         return np.mean(user_ratings) if len(user_ratings) > 0 else np.nan
+
+#     sim_list = sorted(sim_list, key=lambda x: abs(x[0]), reverse=True)[:neighbor]
+#     similarities = np.array([s for s, _ in sim_list])
+#     rating_diffs = np.array([d for _, d in sim_list])
+#     weighted_sum = np.dot(similarities, rating_diffs)
+#     sum_sim = np.sum(np.abs(similarities))
+#     pred_diff = weighted_sum / sum_sim if sum_sim != 0 else 0
+#     pred = item_avg_rating.get(movie, 0) + pred_diff
+#     return np.clip(pred, 1, 5)
+
+# # Hàm gợi ý
+# def recommend_topk_itemcf(user_id, top_k=10, neighbor=10):
+#     if user_id not in user_train_rating:
+#         print(f"❌ User {user_id} không có dữ liệu train.")
+#         return
+
+#     watched = set(user_train_rating[user_id])
+#     all_movies = set(item_avg_rating.keys())
+#     candidates = list(all_movies - watched)
+
+#     preds = []
+#     for m in candidates:
+#         pred = predict_rating_item_item(user_id, m, user_train_rating, sim_df, train_rating_dict, item_avg_rating, neighbor)
+#         if not np.isnan(pred):
+#             preds.append((m, pred))
+
+#     top_items = sorted(preds, key=lambda x: -x[1])[:top_k]
+#     print(f"\n🎯 Top {top_k} phim gợi ý cho user {user_id} (Item-Item CF):")
+#     for movie_id, score in top_items:
+#         title = movies_df[movies_df['movieId'] == movie_id]['title'].values[0]
+#         print(f"{title} — predicted rating: {score:.2f}")

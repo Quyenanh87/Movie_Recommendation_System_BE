@@ -70,3 +70,45 @@ def recommend(user_id=None, liked_movies=None, top_n=5):
 
     print("[🎯] Gợi ý:", recommended)
     return recommended if recommended else ["Không tìm thấy phim phù hợp"]
+
+# import pickle
+# import numpy as np
+# from sklearn.metrics.pairwise import cosine_similarity
+
+# # Load mô hình từ file đã lưu
+# with open('ridge_tfidf_recommender.pkl', 'rb') as f:
+#     model = pickle.load(f)
+
+# # Trích xuất các thành phần đã lưu
+# vec = model['vectorizer']
+# movieId_to_content = model['movieId_to_content']
+# movies = model['movies_df']
+# user_models = model['user_models']
+# user_train_rating = model['user_train_rating']
+
+# # Hàm gợi ý Top-K phim cho 1 user
+# def recommend_topk_ridge(user_id, top_k=10):
+#     if user_id not in user_models:
+#         print(f"❌ User {user_id} không có mô hình được huấn luyện.")
+#         return
+
+#     model = user_models[user_id]
+#     train_set = set(user_train_rating.get(user_id, []))
+#     candidate_ids = list(set(movieId_to_content.keys()) - train_set)
+
+#     preds = {}
+#     for mid in candidate_ids:
+#         content = movieId_to_content.get(mid, "")
+#         if not content:
+#             continue
+#         X = vec.transform([content]).toarray()
+#         score = model.predict(X)[0]  # Không chuyển sang [1,5]
+#         preds[mid] = score
+
+#     # Lấy Top-K phim có score cao nhất
+#     top_items = sorted(preds.items(), key=lambda x: -x[1])[:top_k]
+
+#     print(f"\n🎯 Gợi ý Top-{top_k} phim cho user {user_id}:")
+#     for mid, score in top_items:
+#         title = movies.loc[movies['movieId'] == mid, 'title'].values[0]
+#         print(f"{title} (score: {score:.4f})")

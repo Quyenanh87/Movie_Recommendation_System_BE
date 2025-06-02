@@ -1,8 +1,9 @@
 # recommend.py
+from Movie_Recommendation_System_BE.models import cb_ae_mlp, cb_mlp
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from models import (
-    cb_tfidf, cb_tfidf_ridge, cb_tfidf_mlp, cb_tfidf_ae, cb_bert,
+    cb_tfidf, cb_tfidf_ridge, cb_bert,
     cf_knn, cf_neucf, cf_vae, cf_lightgcn, cf_transformer
 )
 from utils.dataset import get_available_titles, get_movies_dataframe
@@ -17,8 +18,8 @@ class RecommendRequest(BaseModel):
 model_map = {
     "CB_TF-IDF": cb_tfidf,
     "CB_TF-IDF-Ridge": cb_tfidf_ridge,
-    "CB_TF-IDF-MLP": cb_tfidf_mlp,
-    "CB_TF-IDF-AE": cb_tfidf_ae,
+    "CB_TF-IDF-MLP": cb_mlp,
+    "CB_TF-IDF-AE": cb_ae_mlp,
     "CB_BERT": cb_bert,
     "CF_kNN": cf_knn,
     "CF_NeuCF": cf_neucf,

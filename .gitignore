@@ -1,0 +1,22 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+
+# Model files
+file_pkl/neumf.pt
+file_pkl/vae_full.pt
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+.DS_Store
